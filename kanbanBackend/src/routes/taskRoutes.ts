@@ -1,8 +1,19 @@
-import express from 'express';
-import { createTask } from '../controllers/taskController';
+import express from 'express'
+import {
+  createTask,
+  updateTask,
+  moveTask
+} from '../controllers/taskController'
 
-const router = express.Router();
+const router = express.Router()
 
-router.post('/create', createTask);
+// Create a new task
+router.post('/create', createTask)
 
-export default router;
+// Update an existing task
+router.put('/:id/update', updateTask)
+
+// Move a task to a different column
+router.post('/move', moveTask)
+
+export default router

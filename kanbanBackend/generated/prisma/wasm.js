@@ -142,6 +142,41 @@ exports.Prisma.TeamScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.BoardScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  summary: 'summary',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TaskScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  acceptanceCriteria: 'acceptanceCriteria',
+  storyPoints: 'storyPoints',
+  difficulty: 'difficulty',
+  verified: 'verified',
+  completed: 'completed',
+  attachment: 'attachment',
+  createdBy: 'createdBy',
+  assignedTo: 'assignedTo',
+  verifier: 'verifier',
+  boardId: 'boardId',
+  columnId: 'columnId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ColumnScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  boardId: 'boardId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -160,7 +195,10 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Team: 'Team'
+  Team: 'Team',
+  Board: 'Board',
+  Task: 'Task',
+  Column: 'Column'
 };
 
 /**

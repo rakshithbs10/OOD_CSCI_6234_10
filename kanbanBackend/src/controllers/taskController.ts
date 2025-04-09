@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
-import prisma from '../config/db';
+import { Request, Response } from 'express'
+import prisma from '../config/db'
 
+// Create a new task
 export const createTask = async (req: Request, res: Response) => {
   const {
     title,
@@ -8,14 +9,15 @@ export const createTask = async (req: Request, res: Response) => {
     acceptanceCriteria,
     storyPoints,
     difficulty,
-    createdById,
-    assignedToId,
-    verifierId,
+    createdBy,
+    assignedTo,
+    verifier,
     boardId,
+    columnId,
     verified,
     completed,
-    attachment // optional: this can be a file URL or path
-  } = req.body;
+    attachment
+  } = req.body
 
   try {
     const task = await prisma.task.create({
@@ -25,19 +27,57 @@ export const createTask = async (req: Request, res: Response) => {
         acceptanceCriteria,
         storyPoints,
         difficulty,
-        verified: verified || false,
-        completed: completed || false,
+        verified: verified ?? false,
+        completed: completed ?? false,
         attachment,
-        createdBy: { connect: { id: createdById } },
-        assignedTo: { connect: { id: assignedToId } },
-        verifier: { connect: { id: verifierId } },
+        createdBy,
+        assignedTo,
+        verifier,
         board: { connect: { id: boardId } },
+        column: { connect: { id: columnId } }
       },
-    });
+    })
 
-    res.status(201).json({ message: 'Task created successfully', task });
+    res.status(201).json({ message: 'Task created successfully', task })
   } catch (error) {
-    console.error('Error creating task:', error);
-    res.status(500).json({ error: 'Failed to create task' });
+    console.error('❌ Error creating task:', error)
+    res.status(500).json({ error: 'Failed to create task' })
   }
-};
+}
+
+// Update an existing task
+export const updateTask = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const updates = req.body
+
+  try {
+    const updated = await prisma.task.update({
+      where: { id: parseInt(id) },
+      data: updates
+    })
+
+    res.json({ message: 'Task updated successfully', task: updated })
+  } catch (error) {
+    console.error('❌ Error updating task:', error)
+    res.status(500).json({ error: 'Failed to update task' })
+  }
+}
+
+// Move task to another column
+export const moveTask = async (req: Request, res: Response) => {
+  const { taskId, targetColumnId } = req.body
+
+  try {
+    const task = await prisma.task.update({
+      where: { id: taskId },
+      data: {
+        column: { connect: { id: targetColumnId } }
+      }
+    })
+
+    res.json({ message: 'Task moved successfully', task })
+  } catch (error) {
+    console.error('❌ Error moving task:', error)
+    res.status(500).json({ error: 'Failed to move task' })
+  }
+}

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -14,69 +8,81 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Task {
-  id                Int      @id @default(autoincrement())
-  title             String
-  description       String
-  acceptanceCriteria String
-  storyPoints       Int
-  difficulty        Int
-  verified          Boolean  @default(false)
-  completed         Boolean  @default(false)
-  attachment        String?   // File path or URL
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  // Relations
-  createdBy         User     @relation("CreatedTasks", fields: [createdById], references: [id])
-  createdById       Int
-
-  assignedTo        User     @relation("AssignedTasks", fields: [assignedToId], references: [id])
-  assignedToId      Int
-
-  verifier          User     @relation("VerifiedTasks", fields: [verifierId], references: [id])
-  verifierId        Int
-
-  board             Board    @relation(fields: [boardId], references: [id])
-  boardId           Int
-}
-
-
 model User {
-  id                  Int      @id @default(autoincrement())
-  username            String   @unique
-  email               String   @unique
-  password            String
-  firstName           String?
-  lastName            String?
-  position            String?
+  id        Int     @id @default(autoincrement())
+  username  String  @unique
+  email     String  @unique
+  password  String
+  firstName String?
+  lastName  String?
+  position  String?
 
-  notifyAssignedTasks Boolean  @default(true)
-  notifyTaskComments  Boolean  @default(true)
-  notifyDueDates      Boolean  @default(true)
-  notifyBoardInvites  Boolean  @default(true)
+  notifyAssignedTasks Boolean @default(true)
+  notifyTaskComments  Boolean @default(true)
+  notifyDueDates      Boolean @default(true)
+  notifyBoardInvites  Boolean @default(true)
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  isDeleted           Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
 
-  boards              Board[]  @relation("BoardMembers")
+  boards        Board[] @relation("BoardMembers")
 }
 
 model Team {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  members     String[] // Array of names (as strings)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  members   String[] // Array of user names or IDs
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Board {
   id        Int      @id @default(autoincrement())
   name      String
   summary   String?
-  users     User[]   @relation("BoardMembers", references: [id])
+  users     User[]   @relation("BoardMembers") // ✅ FIXED
+  columns   Column[] // ✅ NEW
+  tasks     Task[]   // ✅ NEW back relation
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Task {
+  id                  Int      @id @default(autoincrement())
+  title               String
+  description         String
+  acceptanceCriteria  String
+  storyPoints         Int
+  difficulty          Int
+  verified            Boolean  @default(false)
+  completed           Boolean  @default(false)
+  attachment          String?
+
+  createdBy           String
+  assignedTo          String
+  verifier            String
+
+  board               Board    @relation(fields: [boardId], references: [id])
+  boardId             Int
+  column              Column?  @relation(fields: [columnId], references: [id])
+  columnId            Int?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+
+model Column {
+  id        Int      @id @default(autoincrement())
+  name      String
+  board     Board    @relation(fields: [boardId], references: [id])
+  boardId   Int
+  tasks     Task[]   // A column has many tasks
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
 

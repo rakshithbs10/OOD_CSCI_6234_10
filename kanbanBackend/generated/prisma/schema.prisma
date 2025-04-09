@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -30,13 +24,60 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  isDeleted Boolean  @default(false) // for soft delete
+  isDeleted Boolean  @default(false)
+
+  boards Board[] @relation("BoardMembers")
 }
 
 model Team {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  members   String[] // Array of names (as strings)
+  members   String[] // Array of user names or IDs
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  name      String
+  summary   String?
+  users     User[]   @relation("BoardMembers") // ✅ FIXED
+  columns   Column[] // ✅ NEW
+  tasks     Task[] // ✅ NEW back relation
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id                 Int     @id @default(autoincrement())
+  title              String
+  description        String
+  acceptanceCriteria String
+  storyPoints        Int
+  difficulty         Int
+  verified           Boolean @default(false)
+  completed          Boolean @default(false)
+  attachment         String?
+
+  createdBy  String
+  assignedTo String
+  verifier   String
+
+  board    Board   @relation(fields: [boardId], references: [id])
+  boardId  Int
+  column   Column? @relation(fields: [columnId], references: [id])
+  columnId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Column {
+  id        Int      @id @default(autoincrement())
+  name      String
+  board     Board    @relation(fields: [boardId], references: [id])
+  boardId   Int
+  tasks     Task[] // A column has many tasks
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
