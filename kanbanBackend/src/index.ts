@@ -4,8 +4,8 @@ import dotenv from 'dotenv'
 import prisma from './config/db'
 import userRoutes from './routes/userRoutes'
 import teamRoutes from './routes/teamRoutes'
-
-
+import boardRoutes from './routes/boardRoutes';
+import taskRoutes from './routes/taskRoutes';
 
 dotenv.config()
 
@@ -21,7 +21,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', userRoutes)
 app.use('/api/teams', teamRoutes)
-
+app.use('/api/boards', boardRoutes);
+app.use('/api/tasks', taskRoutes);
 
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`)
