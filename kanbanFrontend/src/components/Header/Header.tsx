@@ -10,6 +10,7 @@ export default function Header() {
   const router = useRouter()
 
   const handleLogout = () => {
+    sessionStorage.clear() // Clear all session storage
     setShowModal(false)
     router.push('/login') // Redirect to login page
   }
@@ -39,7 +40,7 @@ export default function Header() {
 
       {/* Logout Confirmation Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.35)] bg-opacity-40 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg relative">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Confirm Logout</h2>
             <p className="text-sm text-gray-600 mb-6">Are you sure you want to log out?</p>
