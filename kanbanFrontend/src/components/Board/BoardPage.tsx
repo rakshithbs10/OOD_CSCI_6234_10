@@ -7,6 +7,9 @@ import Column from './Column'
 import Sidebar from '@/components/Sidebar/Sidebar'
 import Header from '@/components/Header/Header'
 import AddColumnModal from '@/components/Modals/AddColumnModal'
+import AddMemberModal from '@/components/Modals/AddMemberModal'
+import RemoveMemberModal from '@/components/Modals/RemoveMemberModal'
+import DeleteBoardModal from '@/components/Modals/DeleteBoardModal'
 
 interface Task {
   id: string
@@ -34,12 +37,18 @@ interface BoardData {
   tasks: Record<string, Task>
   columns: Record<string, ColumnType>
   columnOrder: string[]
+  ownerId: number
 }
 
 export default function BoardPage({ boardId }: { boardId?: string }) {
   const [data, setData] = useState<BoardData | null>(null)
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false)
+  const [showRemoveMemberModal, setShowRemoveMemberModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+
+  const user = typeof window !== 'undefined' ? JSON.parse(sessionStorage.getItem('user') || '{}') : {}
 
   const fetchBoard = async () => {
     if (!boardId) return
@@ -83,7 +92,7 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
         columnOrder.push(String(col.id))
       }
 
-      setData({ tasks, columns, columnOrder })
+      setData({ tasks, columns, columnOrder, ownerId: board.ownerId })
     } catch (err) {
       console.error('Failed to load board:', err)
     } finally {
@@ -132,6 +141,8 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
     }
   }
 
+  const isOwner = data && user?.id === data.ownerId
+
   return (
     <div className="relative min-h-screen bg-gray-50">
       <div className="sticky top-0 z-50">
@@ -141,7 +152,23 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
       <div className="flex">
         <Sidebar />
         <main className="p-6 flex-1">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">Project Board</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">Project Board</h1>
+            {isOwner && (
+              <div className="flex gap-3">
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition" onClick={() => setShowAddMemberModal(true)}>
+                  Add Member
+                </button>
+                <button className="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 transition" onClick={() => setShowRemoveMemberModal(true)}>
+                  Remove Member
+                </button>
+                <button className="bg-red-600 text-white px-3 py-1 rounded over:bg-red-700 transition" onClick={() => setShowDeleteModal(true)}>
+                  Delete Board
+                </button>
+              </div>
+            )}
+          </div>
+
           {loading ? (
             <p className="text-gray-600">Loading board...</p>
           ) : (
@@ -181,6 +208,11 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
         onClose={() => setIsColumnModalOpen(false)}
         onAdd={handleAddColumn}
       />
+
+      {/* Modals */}
+      <AddMemberModal boardId={parseInt(boardId!)} isOpen={showAddMemberModal} onClose={() => setShowAddMemberModal(false)} />
+      <RemoveMemberModal boardId={parseInt(boardId!)} isOpen={showRemoveMemberModal} onClose={() => setShowRemoveMemberModal(false)} />
+      <DeleteBoardModal boardId={parseInt(boardId!)} isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} />
     </div>
   )
 }
