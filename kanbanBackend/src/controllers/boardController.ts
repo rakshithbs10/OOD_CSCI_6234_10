@@ -59,6 +59,7 @@ export const getAllBoardsForUser = async (req: Request, res: Response): Promise<
   try {
     const boards = await prisma.board.findMany({
       where: {
+        isDeleted: false, 
         users: {
           some: {
             id: userId
@@ -199,5 +200,54 @@ export const getUsersByBoardId = async (req: Request, res: Response): Promise<vo
   } catch (error) {
     console.error('❌ Error fetching users for board:', error)
     res.status(500).json({ error: 'Failed to fetch users' })
+  }
+}
+
+// ✅ Remove Member from Board
+export const removeMemberFromBoard: RequestHandler = async (req, res) => {
+  const boardId = parseInt(req.params.boardId)
+  const { userId } = req.body
+
+  if (!userId || isNaN(boardId)) {
+    res.status(400).json({ message: 'Invalid boardId or userId' })
+    return
+  }
+
+  try {
+    await prisma.board.update({
+      where: { id: boardId },
+      data: {
+        users: {
+          disconnect: { id: userId }
+        }
+      }
+    })
+    res.status(200).json({ message: 'User removed from board' })
+  } catch (err) {
+    console.error('Error removing user from board:', err)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+// ✅ Soft Delete Board
+export const softDeleteBoard: RequestHandler = async (req, res) => {
+  const boardId = parseInt(req.params.boardId)
+
+  if (isNaN(boardId)) {
+    res.status(400).json({ message: 'Invalid boardId' })
+    return
+  }
+
+  try {
+    await prisma.board.update({
+      where: { id: boardId },
+      data: {
+        isDeleted: true
+      }
+    })
+    res.status(200).json({ message: 'Board soft deleted' })
+  } catch (err) {
+    console.error('Error soft deleting board:', err)
+    res.status(500).json({ message: 'Internal server error' })
   }
 }

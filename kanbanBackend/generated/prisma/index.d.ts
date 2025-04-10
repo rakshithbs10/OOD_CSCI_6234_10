@@ -3653,6 +3653,7 @@ export namespace Prisma {
     name: string | null
     summary: string | null
     ownerId: number | null
+    isDeleted: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3662,6 +3663,7 @@ export namespace Prisma {
     name: string | null
     summary: string | null
     ownerId: number | null
+    isDeleted: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3671,6 +3673,7 @@ export namespace Prisma {
     name: number
     summary: number
     ownerId: number
+    isDeleted: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3692,6 +3695,7 @@ export namespace Prisma {
     name?: true
     summary?: true
     ownerId?: true
+    isDeleted?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3701,6 +3705,7 @@ export namespace Prisma {
     name?: true
     summary?: true
     ownerId?: true
+    isDeleted?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3710,6 +3715,7 @@ export namespace Prisma {
     name?: true
     summary?: true
     ownerId?: true
+    isDeleted?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3806,6 +3812,7 @@ export namespace Prisma {
     name: string
     summary: string | null
     ownerId: number
+    isDeleted: boolean
     createdAt: Date
     updatedAt: Date
     _count: BoardCountAggregateOutputType | null
@@ -3834,6 +3841,7 @@ export namespace Prisma {
     name?: boolean
     summary?: boolean
     ownerId?: boolean
+    isDeleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -3848,6 +3856,7 @@ export namespace Prisma {
     name?: boolean
     summary?: boolean
     ownerId?: boolean
+    isDeleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -3858,6 +3867,7 @@ export namespace Prisma {
     name?: boolean
     summary?: boolean
     ownerId?: boolean
+    isDeleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -3868,11 +3878,12 @@ export namespace Prisma {
     name?: boolean
     summary?: boolean
     ownerId?: boolean
+    isDeleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BoardOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "summary" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["board"]>
+  export type BoardOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "summary" | "ownerId" | "isDeleted" | "createdAt" | "updatedAt", ExtArgs["result"]["board"]>
   export type BoardInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     users?: boolean | Board$usersArgs<ExtArgs>
@@ -3900,6 +3911,7 @@ export namespace Prisma {
       name: string
       summary: string | null
       ownerId: number
+      isDeleted: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["board"]>
@@ -4333,6 +4345,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Board", 'String'>
     readonly summary: FieldRef<"Board", 'String'>
     readonly ownerId: FieldRef<"Board", 'Int'>
+    readonly isDeleted: FieldRef<"Board", 'Boolean'>
     readonly createdAt: FieldRef<"Board", 'DateTime'>
     readonly updatedAt: FieldRef<"Board", 'DateTime'>
   }
@@ -7275,6 +7288,7 @@ export namespace Prisma {
     name: 'name',
     summary: 'summary',
     ownerId: 'ownerId',
+    isDeleted: 'isDeleted',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7577,6 +7591,7 @@ export namespace Prisma {
     name?: StringFilter<"Board"> | string
     summary?: StringNullableFilter<"Board"> | string | null
     ownerId?: IntFilter<"Board"> | number
+    isDeleted?: BoolFilter<"Board"> | boolean
     createdAt?: DateTimeFilter<"Board"> | Date | string
     updatedAt?: DateTimeFilter<"Board"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -7590,6 +7605,7 @@ export namespace Prisma {
     name?: SortOrder
     summary?: SortOrderInput | SortOrder
     ownerId?: SortOrder
+    isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
@@ -7606,6 +7622,7 @@ export namespace Prisma {
     name?: StringFilter<"Board"> | string
     summary?: StringNullableFilter<"Board"> | string | null
     ownerId?: IntFilter<"Board"> | number
+    isDeleted?: BoolFilter<"Board"> | boolean
     createdAt?: DateTimeFilter<"Board"> | Date | string
     updatedAt?: DateTimeFilter<"Board"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -7619,6 +7636,7 @@ export namespace Prisma {
     name?: SortOrder
     summary?: SortOrderInput | SortOrder
     ownerId?: SortOrder
+    isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: BoardCountOrderByAggregateInput
@@ -7636,6 +7654,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Board"> | string
     summary?: StringNullableWithAggregatesFilter<"Board"> | string | null
     ownerId?: IntWithAggregatesFilter<"Board"> | number
+    isDeleted?: BoolWithAggregatesFilter<"Board"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Board"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Board"> | Date | string
   }
@@ -7995,6 +8014,7 @@ export namespace Prisma {
   export type BoardCreateInput = {
     name: string
     summary?: string | null
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutOwnedBoardsInput
@@ -8008,6 +8028,7 @@ export namespace Prisma {
     name: string
     summary?: string | null
     ownerId: number
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutBoardsInput
@@ -8018,6 +8039,7 @@ export namespace Prisma {
   export type BoardUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutOwnedBoardsNestedInput
@@ -8031,6 +8053,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: IntFieldUpdateOperationsInput | number
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutBoardsNestedInput
@@ -8043,6 +8066,7 @@ export namespace Prisma {
     name: string
     summary?: string | null
     ownerId: number
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -8050,6 +8074,7 @@ export namespace Prisma {
   export type BoardUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8059,6 +8084,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: IntFieldUpdateOperationsInput | number
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8530,6 +8556,7 @@ export namespace Prisma {
     name?: SortOrder
     summary?: SortOrder
     ownerId?: SortOrder
+    isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8544,6 +8571,7 @@ export namespace Prisma {
     name?: SortOrder
     summary?: SortOrder
     ownerId?: SortOrder
+    isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8553,6 +8581,7 @@ export namespace Prisma {
     name?: SortOrder
     summary?: SortOrder
     ownerId?: SortOrder
+    isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9228,6 +9257,7 @@ export namespace Prisma {
   export type BoardCreateWithoutUsersInput = {
     name: string
     summary?: string | null
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutOwnedBoardsInput
@@ -9240,6 +9270,7 @@ export namespace Prisma {
     name: string
     summary?: string | null
     ownerId: number
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     columns?: ColumnUncheckedCreateNestedManyWithoutBoardInput
@@ -9254,6 +9285,7 @@ export namespace Prisma {
   export type BoardCreateWithoutOwnerInput = {
     name: string
     summary?: string | null
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserCreateNestedManyWithoutBoardsInput
@@ -9265,6 +9297,7 @@ export namespace Prisma {
     id?: number
     name: string
     summary?: string | null
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutBoardsInput
@@ -9306,6 +9339,7 @@ export namespace Prisma {
     name?: StringFilter<"Board"> | string
     summary?: StringNullableFilter<"Board"> | string | null
     ownerId?: IntFilter<"Board"> | number
+    isDeleted?: BoolFilter<"Board"> | boolean
     createdAt?: DateTimeFilter<"Board"> | Date | string
     updatedAt?: DateTimeFilter<"Board"> | Date | string
   }
@@ -9626,6 +9660,7 @@ export namespace Prisma {
   export type BoardCreateWithoutTasksInput = {
     name: string
     summary?: string | null
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutOwnedBoardsInput
@@ -9638,6 +9673,7 @@ export namespace Prisma {
     name: string
     summary?: string | null
     ownerId: number
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutBoardsInput
@@ -9683,6 +9719,7 @@ export namespace Prisma {
   export type BoardUpdateWithoutTasksInput = {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutOwnedBoardsNestedInput
@@ -9695,6 +9732,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: IntFieldUpdateOperationsInput | number
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutBoardsNestedInput
@@ -9730,6 +9768,7 @@ export namespace Prisma {
   export type BoardCreateWithoutColumnsInput = {
     name: string
     summary?: string | null
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutOwnedBoardsInput
@@ -9742,6 +9781,7 @@ export namespace Prisma {
     name: string
     summary?: string | null
     ownerId: number
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutBoardsInput
@@ -9812,6 +9852,7 @@ export namespace Prisma {
   export type BoardUpdateWithoutColumnsInput = {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutOwnedBoardsNestedInput
@@ -9824,6 +9865,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: IntFieldUpdateOperationsInput | number
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutBoardsNestedInput
@@ -9850,6 +9892,7 @@ export namespace Prisma {
     id?: number
     name: string
     summary?: string | null
+    isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9857,6 +9900,7 @@ export namespace Prisma {
   export type BoardUpdateWithoutUsersInput = {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutOwnedBoardsNestedInput
@@ -9869,6 +9913,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: IntFieldUpdateOperationsInput | number
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     columns?: ColumnUncheckedUpdateManyWithoutBoardNestedInput
@@ -9880,6 +9925,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: IntFieldUpdateOperationsInput | number
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9887,6 +9933,7 @@ export namespace Prisma {
   export type BoardUpdateWithoutOwnerInput = {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutBoardsNestedInput
@@ -9898,6 +9945,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutBoardsNestedInput
@@ -9909,6 +9957,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

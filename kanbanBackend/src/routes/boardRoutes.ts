@@ -7,7 +7,9 @@ import {
   getAllBoardsForUser,
   addUserToBoard,
   getUsersByBoardId,
-  getBoardById
+  getBoardById,
+  removeMemberFromBoard,
+  softDeleteBoard
 } from '../controllers/boardController'
 
 const router = express.Router()
@@ -34,6 +36,9 @@ router.get('/boards/:boardId/users', getUsersByBoardId)
 
 
 router.get('/board/:boardId', getBoardById)
+
+router.put('/:boardId/remove-member', removeMemberFromBoard)
+router.put('/:boardId/delete', softDeleteBoard)
 
 
 
