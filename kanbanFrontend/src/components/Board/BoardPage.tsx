@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { DragDropContext, DropResult } from '@hello-pangea/dnd'
+import { v4 as uuidv4 } from 'uuid'
 import Column from './Column'
 import Sidebar from '@/components/Sidebar/Sidebar'
 import Header from '@/components/Header/Header'
@@ -20,6 +21,7 @@ interface Task {
   attachments: File | null
   verified: boolean
   completed: boolean
+  columnId: string
 }
 
 interface ColumnType {
@@ -66,7 +68,8 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
             difficulty: String(task.difficulty),
             attachments: task.attachment || null,
             verified: task.verified,
-            completed: task.completed
+            completed: task.completed,
+            columnId: String(task.columnId)
           }
           taskIds.push(String(task.id))
         }
@@ -92,41 +95,23 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
     fetchBoard()
   }, [boardId])
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = async (result: DropResult) => {
     if (!data) return
     const { source, destination, draggableId } = result
-    if (!destination) return
+    if (!destination || source.droppableId === destination.droppableId) return
 
-    const start = data.columns[source.droppableId]
-    const end = data.columns[destination.droppableId]
+    const taskId = parseInt(draggableId)
+    const targetColumnId = parseInt(destination.droppableId)
 
-    if (start === end) {
-      const newTaskIds = [...start.taskIds]
-      newTaskIds.splice(source.index, 1)
-      newTaskIds.splice(destination.index, 0, draggableId)
-      const newColumn = { ...start, taskIds: newTaskIds }
-
-      setData({
-        ...data,
-        columns: {
-          ...data.columns,
-          [newColumn.id]: newColumn
-        }
+    try {
+      await fetch(`http://localhost:5001/api/tasks/move`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskId, targetColumnId })
       })
-    } else {
-      const startTaskIds = [...start.taskIds]
-      const endTaskIds = [...end.taskIds]
-      startTaskIds.splice(source.index, 1)
-      endTaskIds.splice(destination.index, 0, draggableId)
-
-      setData({
-        ...data,
-        columns: {
-          ...data.columns,
-          [start.id]: { ...start, taskIds: startTaskIds },
-          [end.id]: { ...end, taskIds: endTaskIds }
-        }
-      })
+      await fetchBoard()
+    } catch (error) {
+      console.error('Failed to move task:', error)
     }
   }
 

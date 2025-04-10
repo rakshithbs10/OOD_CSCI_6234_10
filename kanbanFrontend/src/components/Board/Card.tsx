@@ -19,7 +19,7 @@ export default function Card({ task, index, boardId, columnId }: any) {
     description,
     acceptanceCriteria,
     difficulty,
-    attachments
+    attachment
   } = task
 
   return (
@@ -68,6 +68,7 @@ export default function Card({ task, index, boardId, columnId }: any) {
         onAdd={() => {}}
         boardId={boardId}
         columnId={columnId}
+        taskId={id}
         initialData={{
           name: title,
           createdBy,
@@ -79,7 +80,7 @@ export default function Card({ task, index, boardId, columnId }: any) {
           description: description || '',
           criteria: acceptanceCriteria || '',
           difficulty: difficulty || '',
-          attachments: attachments || null
+          attachments: attachment || null
         }}
       />
     </>

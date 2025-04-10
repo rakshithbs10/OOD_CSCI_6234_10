@@ -8,7 +8,8 @@ export default function AddTaskModal({
   onAdd,
   initialData = null,
   boardId,
-  columnId
+  columnId,
+  taskId = null
 }: {
   isOpen: boolean
   onClose: () => void
@@ -16,7 +17,9 @@ export default function AddTaskModal({
   initialData?: any | null
   boardId: number
   columnId: number
+  taskId?: number | null
 }) {
+  const isEdit = !!taskId
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -64,7 +67,6 @@ export default function AddTaskModal({
       })
       setErrors({})
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, initialData])
 
   const handleChange = (field: string, value: string | File | boolean | null) => {
@@ -113,15 +115,21 @@ export default function AddTaskModal({
         createdBy: form.createdBy,
         assignedTo: form.assignedTo,
         verifier: form.verifier,
-        boardId,
-        columnId,
+        boardId: Number(boardId),
+        columnId: Number(columnId),
         verified: form.verified,
         completed: form.completed,
         attachment: form.attachments ? form.attachments.name : null
       }
 
-      const res = await fetch('http://localhost:5001/api/tasks/create', {
-        method: 'POST',
+      const endpoint = isEdit
+        ? `http://localhost:5001/api/tasks/${taskId}/update`
+        : 'http://localhost:5001/api/tasks/create'
+
+      const method = taskId ? 'PUT' : 'POST'
+
+      const res = await fetch(endpoint, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       })
@@ -131,10 +139,10 @@ export default function AddTaskModal({
         onClose()
         window.location.reload()
       } else {
-        console.error('Failed to create task')
+        console.error(`${taskId ? 'Update' : 'Create'} task failed`)
       }
     } catch (err) {
-      console.error('Error creating task:', err)
+      console.error('Error creating/updating task:', err)
     }
   }
 
@@ -147,7 +155,7 @@ export default function AddTaskModal({
         className="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6 relative overflow-y-auto max-h-[90vh]"
       >
         <button onClick={onClose} className="absolute top-3 right-4 text-xl font-bold text-gray-500">&times;</button>
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Create New Task</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">{form.name || 'Create New Task'}</h2>
 
         {/* Task Name */}
         <div className="mb-4">
@@ -299,11 +307,12 @@ export default function AddTaskModal({
           </label>
         </div>
 
+
         <button
           onClick={handleSubmit}
           className="mt-2 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
         >
-          Add Task
+          {taskId ? 'Update Task' : 'Add Task'}
         </button>
       </div>
     </div>
