@@ -146,6 +146,7 @@ exports.Prisma.BoardScalarFieldEnum = {
   id: 'id',
   name: 'name',
   summary: 'summary',
+  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

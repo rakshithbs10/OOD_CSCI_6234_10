@@ -1,20 +1,30 @@
 import { Request, Response } from 'express'
+import { RequestHandler } from 'express'
 import prisma from '../config/db'
 
 // Create a new board
-export const createBoard = async (req: Request, res: Response) => {
-  const { name, summary, userIds } = req.body
+export const createBoard: RequestHandler = async (req, res) => {
+  const { name, summary, userIds, ownerId } = req.body
+
+  if (!name || !Array.isArray(userIds) || userIds.length === 0 || !ownerId) {
+    res.status(400).json({ error: 'Board name, users, and owner are required.' })
+    return
+  }
 
   try {
     const board = await prisma.board.create({
       data: {
         name,
         summary,
+        owner: { connect: { id: ownerId } },
         users: {
-          connect: userIds.map((id: number) => ({ id })),
-        },
+          connect: Array.from(new Set([...userIds, ownerId])).map((id: number) => ({ id }))
+        }
       },
-      include: { users: true }
+      include: {
+        users: true,
+        owner: true
+      }
     })
 
     res.status(201).json({ message: 'Board created successfully', board })
@@ -35,6 +45,38 @@ export const getAllUsersForBoard = async (_req: Request, res: Response) => {
   } catch (error) {
     console.error('❌ Error fetching users:', error)
     res.status(500).json({ error: 'Failed to fetch users' })
+  }
+}
+
+export const getAllBoardsForUser = async (req: Request, res: Response): Promise<void> => {
+  const userId = parseInt(req.params.userId)
+
+  if (isNaN(userId)) {
+    res.status(400).json({ error: 'Invalid user ID' })
+    return
+  }
+
+  try {
+    const boards = await prisma.board.findMany({
+      where: {
+        users: {
+          some: {
+            id: userId
+          }
+        }
+      },
+      include: {
+        users: true,
+        columns: true,
+        tasks: true,
+        owner: true 
+      }
+    })
+
+    res.json(boards)
+  } catch (error) {
+    console.error('❌ Error fetching boards for user:', error)
+    res.status(500).json({ error: 'Failed to fetch boards' })
   }
 }
 

@@ -26,7 +26,8 @@ model User {
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
 
-  boards Board[] @relation("BoardMembers")
+  boards      Board[] @relation("BoardMembers")
+  ownedBoards Board[] @relation("BoardOwner") // ✅ Matches Board.owner
 }
 
 model Team {
@@ -38,12 +39,16 @@ model Team {
 }
 
 model Board {
-  id        Int      @id @default(autoincrement())
-  name      String
-  summary   String?
-  users     User[]   @relation("BoardMembers") // ✅ FIXED
-  columns   Column[] // ✅ NEW
-  tasks     Task[] // ✅ NEW back relation
+  id      Int     @id @default(autoincrement())
+  name    String
+  summary String?
+
+  owner   User @relation("BoardOwner", fields: [ownerId], references: [id])
+  ownerId Int
+
+  users     User[]   @relation("BoardMembers")
+  columns   Column[]
+  tasks     Task[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

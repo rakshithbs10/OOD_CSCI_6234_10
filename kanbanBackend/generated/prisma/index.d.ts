@@ -1234,10 +1234,12 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     boards: number
+    ownedBoards: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     boards?: boolean | UserCountOutputTypeCountBoardsArgs
+    ownedBoards?: boolean | UserCountOutputTypeCountOwnedBoardsArgs
   }
 
   // Custom InputTypes
@@ -1255,6 +1257,13 @@ export namespace Prisma {
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountBoardsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BoardWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountOwnedBoardsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BoardWhereInput
   }
 
@@ -1614,6 +1623,7 @@ export namespace Prisma {
     updatedAt?: boolean
     isDeleted?: boolean
     boards?: boolean | User$boardsArgs<ExtArgs>
+    ownedBoards?: boolean | User$ownedBoardsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1671,6 +1681,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "firstName" | "lastName" | "position" | "notifyAssignedTasks" | "notifyTaskComments" | "notifyDueDates" | "notifyBoardInvites" | "createdAt" | "updatedAt" | "isDeleted", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     boards?: boolean | User$boardsArgs<ExtArgs>
+    ownedBoards?: boolean | User$ownedBoardsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1680,6 +1691,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       boards: Prisma.$BoardPayload<ExtArgs>[]
+      ownedBoards: Prisma.$BoardPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -2091,6 +2103,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     boards<T extends User$boardsArgs<ExtArgs> = {}>(args?: Subset<T, User$boardsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ownedBoards<T extends User$ownedBoardsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedBoardsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BoardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2525,6 +2538,30 @@ export namespace Prisma {
    * User.boards
    */
   export type User$boardsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Board
+     */
+    select?: BoardSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Board
+     */
+    omit?: BoardOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoardInclude<ExtArgs> | null
+    where?: BoardWhereInput
+    orderBy?: BoardOrderByWithRelationInput | BoardOrderByWithRelationInput[]
+    cursor?: BoardWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BoardScalarFieldEnum | BoardScalarFieldEnum[]
+  }
+
+  /**
+   * User.ownedBoards
+   */
+  export type User$ownedBoardsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Board
      */
@@ -3603,16 +3640,19 @@ export namespace Prisma {
 
   export type BoardAvgAggregateOutputType = {
     id: number | null
+    ownerId: number | null
   }
 
   export type BoardSumAggregateOutputType = {
     id: number | null
+    ownerId: number | null
   }
 
   export type BoardMinAggregateOutputType = {
     id: number | null
     name: string | null
     summary: string | null
+    ownerId: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3621,6 +3661,7 @@ export namespace Prisma {
     id: number | null
     name: string | null
     summary: string | null
+    ownerId: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3629,6 +3670,7 @@ export namespace Prisma {
     id: number
     name: number
     summary: number
+    ownerId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3637,16 +3679,19 @@ export namespace Prisma {
 
   export type BoardAvgAggregateInputType = {
     id?: true
+    ownerId?: true
   }
 
   export type BoardSumAggregateInputType = {
     id?: true
+    ownerId?: true
   }
 
   export type BoardMinAggregateInputType = {
     id?: true
     name?: true
     summary?: true
+    ownerId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3655,6 +3700,7 @@ export namespace Prisma {
     id?: true
     name?: true
     summary?: true
+    ownerId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3663,6 +3709,7 @@ export namespace Prisma {
     id?: true
     name?: true
     summary?: true
+    ownerId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3758,6 +3805,7 @@ export namespace Prisma {
     id: number
     name: string
     summary: string | null
+    ownerId: number
     createdAt: Date
     updatedAt: Date
     _count: BoardCountAggregateOutputType | null
@@ -3785,8 +3833,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     summary?: boolean
+    ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     users?: boolean | Board$usersArgs<ExtArgs>
     columns?: boolean | Board$columnsArgs<ExtArgs>
     tasks?: boolean | Board$tasksArgs<ExtArgs>
@@ -3797,39 +3847,50 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     summary?: boolean
+    ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["board"]>
 
   export type BoardSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     summary?: boolean
+    ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["board"]>
 
   export type BoardSelectScalar = {
     id?: boolean
     name?: boolean
     summary?: boolean
+    ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BoardOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "summary" | "createdAt" | "updatedAt", ExtArgs["result"]["board"]>
+  export type BoardOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "summary" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["board"]>
   export type BoardInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
     users?: boolean | Board$usersArgs<ExtArgs>
     columns?: boolean | Board$columnsArgs<ExtArgs>
     tasks?: boolean | Board$tasksArgs<ExtArgs>
     _count?: boolean | BoardCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type BoardIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type BoardIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type BoardIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type BoardIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+  }
 
   export type $BoardPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Board"
     objects: {
+      owner: Prisma.$UserPayload<ExtArgs>
       users: Prisma.$UserPayload<ExtArgs>[]
       columns: Prisma.$ColumnPayload<ExtArgs>[]
       tasks: Prisma.$TaskPayload<ExtArgs>[]
@@ -3838,6 +3899,7 @@ export namespace Prisma {
       id: number
       name: string
       summary: string | null
+      ownerId: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["board"]>
@@ -4234,6 +4296,7 @@ export namespace Prisma {
    */
   export interface Prisma__BoardClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     users<T extends Board$usersArgs<ExtArgs> = {}>(args?: Subset<T, Board$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     columns<T extends Board$columnsArgs<ExtArgs> = {}>(args?: Subset<T, Board$columnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ColumnPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     tasks<T extends Board$tasksArgs<ExtArgs> = {}>(args?: Subset<T, Board$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4269,6 +4332,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Board", 'Int'>
     readonly name: FieldRef<"Board", 'String'>
     readonly summary: FieldRef<"Board", 'String'>
+    readonly ownerId: FieldRef<"Board", 'Int'>
     readonly createdAt: FieldRef<"Board", 'DateTime'>
     readonly updatedAt: FieldRef<"Board", 'DateTime'>
   }
@@ -4520,6 +4584,10 @@ export namespace Prisma {
      */
     data: BoardCreateManyInput | BoardCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoardIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4590,6 +4658,10 @@ export namespace Prisma {
      * Limit how many Boards to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BoardIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -7202,6 +7274,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     summary: 'summary',
+    ownerId: 'ownerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7356,6 +7429,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isDeleted?: BoolFilter<"User"> | boolean
     boards?: BoardListRelationFilter
+    ownedBoards?: BoardListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -7374,6 +7448,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     boards?: BoardOrderByRelationAggregateInput
+    ownedBoards?: BoardOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -7395,6 +7470,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isDeleted?: BoolFilter<"User"> | boolean
     boards?: BoardListRelationFilter
+    ownedBoards?: BoardListRelationFilter
   }, "id" | "username" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -7500,8 +7576,10 @@ export namespace Prisma {
     id?: IntFilter<"Board"> | number
     name?: StringFilter<"Board"> | string
     summary?: StringNullableFilter<"Board"> | string | null
+    ownerId?: IntFilter<"Board"> | number
     createdAt?: DateTimeFilter<"Board"> | Date | string
     updatedAt?: DateTimeFilter<"Board"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     users?: UserListRelationFilter
     columns?: ColumnListRelationFilter
     tasks?: TaskListRelationFilter
@@ -7511,8 +7589,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     summary?: SortOrderInput | SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    owner?: UserOrderByWithRelationInput
     users?: UserOrderByRelationAggregateInput
     columns?: ColumnOrderByRelationAggregateInput
     tasks?: TaskOrderByRelationAggregateInput
@@ -7525,8 +7605,10 @@ export namespace Prisma {
     NOT?: BoardWhereInput | BoardWhereInput[]
     name?: StringFilter<"Board"> | string
     summary?: StringNullableFilter<"Board"> | string | null
+    ownerId?: IntFilter<"Board"> | number
     createdAt?: DateTimeFilter<"Board"> | Date | string
     updatedAt?: DateTimeFilter<"Board"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     users?: UserListRelationFilter
     columns?: ColumnListRelationFilter
     tasks?: TaskListRelationFilter
@@ -7536,6 +7618,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     summary?: SortOrderInput | SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: BoardCountOrderByAggregateInput
@@ -7552,6 +7635,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"Board"> | number
     name?: StringWithAggregatesFilter<"Board"> | string
     summary?: StringNullableWithAggregatesFilter<"Board"> | string | null
+    ownerId?: IntWithAggregatesFilter<"Board"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Board"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Board"> | Date | string
   }
@@ -7746,6 +7830,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     boards?: BoardCreateNestedManyWithoutUsersInput
+    ownedBoards?: BoardCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -7764,6 +7849,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     boards?: BoardUncheckedCreateNestedManyWithoutUsersInput
+    ownedBoards?: BoardUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUpdateInput = {
@@ -7781,6 +7867,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     boards?: BoardUpdateManyWithoutUsersNestedInput
+    ownedBoards?: BoardUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -7799,6 +7886,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     boards?: BoardUncheckedUpdateManyWithoutUsersNestedInput
+    ownedBoards?: BoardUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -7909,6 +7997,7 @@ export namespace Prisma {
     summary?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedBoardsInput
     users?: UserCreateNestedManyWithoutBoardsInput
     columns?: ColumnCreateNestedManyWithoutBoardInput
     tasks?: TaskCreateNestedManyWithoutBoardInput
@@ -7918,6 +8007,7 @@ export namespace Prisma {
     id?: number
     name: string
     summary?: string | null
+    ownerId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutBoardsInput
@@ -7930,6 +8020,7 @@ export namespace Prisma {
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedBoardsNestedInput
     users?: UserUpdateManyWithoutBoardsNestedInput
     columns?: ColumnUpdateManyWithoutBoardNestedInput
     tasks?: TaskUpdateManyWithoutBoardNestedInput
@@ -7939,6 +8030,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutBoardsNestedInput
@@ -7950,6 +8042,7 @@ export namespace Prisma {
     id?: number
     name: string
     summary?: string | null
+    ownerId: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7965,6 +8058,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8396,6 +8490,11 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
   export type UserListRelationFilter = {
     every?: UserWhereInput
     some?: UserWhereInput
@@ -8430,18 +8529,21 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     summary?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type BoardAvgOrderByAggregateInput = {
     id?: SortOrder
+    ownerId?: SortOrder
   }
 
   export type BoardMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     summary?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8450,12 +8552,14 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     summary?: SortOrder
+    ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type BoardSumOrderByAggregateInput = {
     id?: SortOrder
+    ownerId?: SortOrder
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -8608,9 +8712,23 @@ export namespace Prisma {
     connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
   }
 
+  export type BoardCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<BoardCreateWithoutOwnerInput, BoardUncheckedCreateWithoutOwnerInput> | BoardCreateWithoutOwnerInput[] | BoardUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: BoardCreateOrConnectWithoutOwnerInput | BoardCreateOrConnectWithoutOwnerInput[]
+    createMany?: BoardCreateManyOwnerInputEnvelope
+    connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+  }
+
   export type BoardUncheckedCreateNestedManyWithoutUsersInput = {
     create?: XOR<BoardCreateWithoutUsersInput, BoardUncheckedCreateWithoutUsersInput> | BoardCreateWithoutUsersInput[] | BoardUncheckedCreateWithoutUsersInput[]
     connectOrCreate?: BoardCreateOrConnectWithoutUsersInput | BoardCreateOrConnectWithoutUsersInput[]
+    connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+  }
+
+  export type BoardUncheckedCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<BoardCreateWithoutOwnerInput, BoardUncheckedCreateWithoutOwnerInput> | BoardCreateWithoutOwnerInput[] | BoardUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: BoardCreateOrConnectWithoutOwnerInput | BoardCreateOrConnectWithoutOwnerInput[]
+    createMany?: BoardCreateManyOwnerInputEnvelope
     connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
   }
 
@@ -8643,6 +8761,20 @@ export namespace Prisma {
     deleteMany?: BoardScalarWhereInput | BoardScalarWhereInput[]
   }
 
+  export type BoardUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<BoardCreateWithoutOwnerInput, BoardUncheckedCreateWithoutOwnerInput> | BoardCreateWithoutOwnerInput[] | BoardUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: BoardCreateOrConnectWithoutOwnerInput | BoardCreateOrConnectWithoutOwnerInput[]
+    upsert?: BoardUpsertWithWhereUniqueWithoutOwnerInput | BoardUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: BoardCreateManyOwnerInputEnvelope
+    set?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    disconnect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    delete?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    update?: BoardUpdateWithWhereUniqueWithoutOwnerInput | BoardUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: BoardUpdateManyWithWhereWithoutOwnerInput | BoardUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: BoardScalarWhereInput | BoardScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -8664,6 +8796,20 @@ export namespace Prisma {
     deleteMany?: BoardScalarWhereInput | BoardScalarWhereInput[]
   }
 
+  export type BoardUncheckedUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<BoardCreateWithoutOwnerInput, BoardUncheckedCreateWithoutOwnerInput> | BoardCreateWithoutOwnerInput[] | BoardUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: BoardCreateOrConnectWithoutOwnerInput | BoardCreateOrConnectWithoutOwnerInput[]
+    upsert?: BoardUpsertWithWhereUniqueWithoutOwnerInput | BoardUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: BoardCreateManyOwnerInputEnvelope
+    set?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    disconnect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    delete?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    connect?: BoardWhereUniqueInput | BoardWhereUniqueInput[]
+    update?: BoardUpdateWithWhereUniqueWithoutOwnerInput | BoardUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: BoardUpdateManyWithWhereWithoutOwnerInput | BoardUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: BoardScalarWhereInput | BoardScalarWhereInput[]
+  }
+
   export type TeamCreatemembersInput = {
     set: string[]
   }
@@ -8671,6 +8817,12 @@ export namespace Prisma {
   export type TeamUpdatemembersInput = {
     set?: string[]
     push?: string | string[]
+  }
+
+  export type UserCreateNestedOneWithoutOwnedBoardsInput = {
+    create?: XOR<UserCreateWithoutOwnedBoardsInput, UserUncheckedCreateWithoutOwnedBoardsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedBoardsInput
+    connect?: UserWhereUniqueInput
   }
 
   export type UserCreateNestedManyWithoutBoardsInput = {
@@ -8711,6 +8863,14 @@ export namespace Prisma {
     connectOrCreate?: TaskCreateOrConnectWithoutBoardInput | TaskCreateOrConnectWithoutBoardInput[]
     createMany?: TaskCreateManyBoardInputEnvelope
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutOwnedBoardsNestedInput = {
+    create?: XOR<UserCreateWithoutOwnedBoardsInput, UserUncheckedCreateWithoutOwnedBoardsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedBoardsInput
+    upsert?: UserUpsertWithoutOwnedBoardsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOwnedBoardsInput, UserUpdateWithoutOwnedBoardsInput>, UserUncheckedUpdateWithoutOwnedBoardsInput>
   }
 
   export type UserUpdateManyWithoutBoardsNestedInput = {
@@ -9070,6 +9230,7 @@ export namespace Prisma {
     summary?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedBoardsInput
     columns?: ColumnCreateNestedManyWithoutBoardInput
     tasks?: TaskCreateNestedManyWithoutBoardInput
   }
@@ -9078,6 +9239,7 @@ export namespace Prisma {
     id?: number
     name: string
     summary?: string | null
+    ownerId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     columns?: ColumnUncheckedCreateNestedManyWithoutBoardInput
@@ -9087,6 +9249,37 @@ export namespace Prisma {
   export type BoardCreateOrConnectWithoutUsersInput = {
     where: BoardWhereUniqueInput
     create: XOR<BoardCreateWithoutUsersInput, BoardUncheckedCreateWithoutUsersInput>
+  }
+
+  export type BoardCreateWithoutOwnerInput = {
+    name: string
+    summary?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutBoardsInput
+    columns?: ColumnCreateNestedManyWithoutBoardInput
+    tasks?: TaskCreateNestedManyWithoutBoardInput
+  }
+
+  export type BoardUncheckedCreateWithoutOwnerInput = {
+    id?: number
+    name: string
+    summary?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutBoardsInput
+    columns?: ColumnUncheckedCreateNestedManyWithoutBoardInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutBoardInput
+  }
+
+  export type BoardCreateOrConnectWithoutOwnerInput = {
+    where: BoardWhereUniqueInput
+    create: XOR<BoardCreateWithoutOwnerInput, BoardUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type BoardCreateManyOwnerInputEnvelope = {
+    data: BoardCreateManyOwnerInput | BoardCreateManyOwnerInput[]
+    skipDuplicates?: boolean
   }
 
   export type BoardUpsertWithWhereUniqueWithoutUsersInput = {
@@ -9112,8 +9305,65 @@ export namespace Prisma {
     id?: IntFilter<"Board"> | number
     name?: StringFilter<"Board"> | string
     summary?: StringNullableFilter<"Board"> | string | null
+    ownerId?: IntFilter<"Board"> | number
     createdAt?: DateTimeFilter<"Board"> | Date | string
     updatedAt?: DateTimeFilter<"Board"> | Date | string
+  }
+
+  export type BoardUpsertWithWhereUniqueWithoutOwnerInput = {
+    where: BoardWhereUniqueInput
+    update: XOR<BoardUpdateWithoutOwnerInput, BoardUncheckedUpdateWithoutOwnerInput>
+    create: XOR<BoardCreateWithoutOwnerInput, BoardUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type BoardUpdateWithWhereUniqueWithoutOwnerInput = {
+    where: BoardWhereUniqueInput
+    data: XOR<BoardUpdateWithoutOwnerInput, BoardUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type BoardUpdateManyWithWhereWithoutOwnerInput = {
+    where: BoardScalarWhereInput
+    data: XOR<BoardUpdateManyMutationInput, BoardUncheckedUpdateManyWithoutOwnerInput>
+  }
+
+  export type UserCreateWithoutOwnedBoardsInput = {
+    username: string
+    email: string
+    password: string
+    firstName?: string | null
+    lastName?: string | null
+    position?: string | null
+    notifyAssignedTasks?: boolean
+    notifyTaskComments?: boolean
+    notifyDueDates?: boolean
+    notifyBoardInvites?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    boards?: BoardCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserUncheckedCreateWithoutOwnedBoardsInput = {
+    id?: number
+    username: string
+    email: string
+    password: string
+    firstName?: string | null
+    lastName?: string | null
+    position?: string | null
+    notifyAssignedTasks?: boolean
+    notifyTaskComments?: boolean
+    notifyDueDates?: boolean
+    notifyBoardInvites?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    boards?: BoardUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type UserCreateOrConnectWithoutOwnedBoardsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOwnedBoardsInput, UserUncheckedCreateWithoutOwnedBoardsInput>
   }
 
   export type UserCreateWithoutBoardsInput = {
@@ -9130,6 +9380,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
+    ownedBoards?: BoardCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutBoardsInput = {
@@ -9147,6 +9398,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
+    ownedBoards?: BoardUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutBoardsInput = {
@@ -9222,6 +9474,52 @@ export namespace Prisma {
   export type TaskCreateManyBoardInputEnvelope = {
     data: TaskCreateManyBoardInput | TaskCreateManyBoardInput[]
     skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutOwnedBoardsInput = {
+    update: XOR<UserUpdateWithoutOwnedBoardsInput, UserUncheckedUpdateWithoutOwnedBoardsInput>
+    create: XOR<UserCreateWithoutOwnedBoardsInput, UserUncheckedCreateWithoutOwnedBoardsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOwnedBoardsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOwnedBoardsInput, UserUncheckedUpdateWithoutOwnedBoardsInput>
+  }
+
+  export type UserUpdateWithoutOwnedBoardsInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    position?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyAssignedTasks?: BoolFieldUpdateOperationsInput | boolean
+    notifyTaskComments?: BoolFieldUpdateOperationsInput | boolean
+    notifyDueDates?: BoolFieldUpdateOperationsInput | boolean
+    notifyBoardInvites?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    boards?: BoardUpdateManyWithoutUsersNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOwnedBoardsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    position?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyAssignedTasks?: BoolFieldUpdateOperationsInput | boolean
+    notifyTaskComments?: BoolFieldUpdateOperationsInput | boolean
+    notifyDueDates?: BoolFieldUpdateOperationsInput | boolean
+    notifyBoardInvites?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    boards?: BoardUncheckedUpdateManyWithoutUsersNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutBoardsInput = {
@@ -9330,6 +9628,7 @@ export namespace Prisma {
     summary?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedBoardsInput
     users?: UserCreateNestedManyWithoutBoardsInput
     columns?: ColumnCreateNestedManyWithoutBoardInput
   }
@@ -9338,6 +9637,7 @@ export namespace Prisma {
     id?: number
     name: string
     summary?: string | null
+    ownerId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutBoardsInput
@@ -9385,6 +9685,7 @@ export namespace Prisma {
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedBoardsNestedInput
     users?: UserUpdateManyWithoutBoardsNestedInput
     columns?: ColumnUpdateManyWithoutBoardNestedInput
   }
@@ -9393,6 +9694,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutBoardsNestedInput
@@ -9430,6 +9732,7 @@ export namespace Prisma {
     summary?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedBoardsInput
     users?: UserCreateNestedManyWithoutBoardsInput
     tasks?: TaskCreateNestedManyWithoutBoardInput
   }
@@ -9438,6 +9741,7 @@ export namespace Prisma {
     id?: number
     name: string
     summary?: string | null
+    ownerId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutBoardsInput
@@ -9510,6 +9814,7 @@ export namespace Prisma {
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedBoardsNestedInput
     users?: UserUpdateManyWithoutBoardsNestedInput
     tasks?: TaskUpdateManyWithoutBoardNestedInput
   }
@@ -9518,6 +9823,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutBoardsNestedInput
@@ -9540,11 +9846,20 @@ export namespace Prisma {
     data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutColumnInput>
   }
 
+  export type BoardCreateManyOwnerInput = {
+    id?: number
+    name: string
+    summary?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type BoardUpdateWithoutUsersInput = {
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedBoardsNestedInput
     columns?: ColumnUpdateManyWithoutBoardNestedInput
     tasks?: TaskUpdateManyWithoutBoardNestedInput
   }
@@ -9553,6 +9868,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     columns?: ColumnUncheckedUpdateManyWithoutBoardNestedInput
@@ -9560,6 +9876,36 @@ export namespace Prisma {
   }
 
   export type BoardUncheckedUpdateManyWithoutUsersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BoardUpdateWithoutOwnerInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutBoardsNestedInput
+    columns?: ColumnUpdateManyWithoutBoardNestedInput
+    tasks?: TaskUpdateManyWithoutBoardNestedInput
+  }
+
+  export type BoardUncheckedUpdateWithoutOwnerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutBoardsNestedInput
+    columns?: ColumnUncheckedUpdateManyWithoutBoardNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutBoardNestedInput
+  }
+
+  export type BoardUncheckedUpdateManyWithoutOwnerInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     summary?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9606,6 +9952,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    ownedBoards?: BoardUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBoardsInput = {
@@ -9623,6 +9970,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    ownedBoards?: BoardUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutBoardsInput = {

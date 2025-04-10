@@ -2,21 +2,25 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ username: '', password: '' })
-  const [errors, setErrors] = useState({ username: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '' })
+  const [errors, setErrors] = useState({ email: '', password: '' })
+  const [errorMessage, setErrorMessage] = useState('')
+  const router = useRouter()
 
   const handleChange = (field: string, value: string) => {
     setForm({ ...form, [field]: value })
     setErrors({ ...errors, [field]: '' })
+    setErrorMessage('')
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newErrors: any = {}
 
-    if (!form.username.trim()) newErrors.username = 'Username is required'
+    const newErrors: any = {}
+    if (!form.email.trim()) newErrors.email = 'Email is required'
     if (!form.password.trim()) newErrors.password = 'Password is required'
 
     if (Object.keys(newErrors).length > 0) {
@@ -24,8 +28,27 @@ export default function LoginPage() {
       return
     }
 
-    console.log('Login:', form)
-    // TODO: Send login request to backend
+    try {
+      const res = await fetch('http://localhost:5001/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Login failed')
+      }
+
+      const data = await res.json()
+      sessionStorage.setItem('token', data.token)
+      sessionStorage.setItem('user', JSON.stringify(data.user))
+      sessionStorage.setItem('username', data.user.username)
+
+      router.push('/') // change if your main page is different
+    } catch (error: any) {
+      setErrorMessage(error.message)
+    }
   }
 
   return (
@@ -40,16 +63,16 @@ export default function LoginPage() {
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
-                type="text"
-                value={form.username}
-                onChange={(e) => handleChange('username', e.target.value)}
+                type="email"
+                value={form.email}
+                onChange={(e) => handleChange('email', e.target.value)}
                 className={`w-full px-3 py-2 border rounded text-black focus:outline-none focus:ring ${
-                  errors.username ? 'border-red-500' : 'border-gray-300'
+                  errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
-              {errors.username && <p className="text-sm text-red-500 mt-1">{errors.username}</p>}
+              {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
             </div>
 
             <div>
@@ -64,6 +87,8 @@ export default function LoginPage() {
               />
               {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
             </div>
+
+            {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
 
             <button
               type="submit"

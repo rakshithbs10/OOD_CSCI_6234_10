@@ -4,6 +4,7 @@ import {
   getAllUsersForBoard,
   createColumn,
   getBoardColumns,
+  getAllBoardsForUser,
   addUserToBoard
 } from '../controllers/boardController'
 
@@ -23,5 +24,8 @@ router.get('/:boardId/columns', getBoardColumns)
 
 // Add a user to a board
 router.post('/:boardId/add-member', addUserToBoard)
+
+// Get all boards a user is part of
+router.get('/user/:userId/boards', getAllBoardsForUser)
 
 export default router

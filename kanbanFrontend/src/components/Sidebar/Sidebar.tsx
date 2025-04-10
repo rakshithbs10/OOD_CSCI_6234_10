@@ -1,17 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   FaHome, FaClock, FaSearch, FaCog, FaUsers, FaUserFriends,
   FaBoxOpen, FaExclamationCircle, FaExclamationTriangle,
   FaAngleDown, FaAngleUp, FaLayerGroup, FaPlay, FaVolumeUp
 } from 'react-icons/fa'
-
-const projects = [
-  'Apollo', 'Beacon', 'Catalyst', 'Delta', 'Echo',
-  'Foxtrot', 'Golf', 'Hotel', 'India', 'Juliet'
-]
 
 const priorities = [
   { label: 'Urgent', icon: <FaExclamationCircle /> },
@@ -24,6 +19,26 @@ const priorities = [
 export default function Sidebar() {
   const [showProjects, setShowProjects] = useState(true)
   const [showPriorities, setShowPriorities] = useState(true)
+  const [projects, setProjects] = useState<any[]>([])
+
+  useEffect(() => {
+    const user = sessionStorage.getItem('user')
+    if (!user) return
+
+    const userId = JSON.parse(user).id
+
+    const fetchBoards = async () => {
+      try {
+        const res = await fetch(`http://localhost:5001/api/boards/user/${userId}/boards`)
+        const data = await res.json()
+        setProjects(data)
+      } catch (error) {
+        console.error('Failed to fetch sidebar projects:', error)
+      }
+    }
+
+    fetchBoards()
+  }, [])
 
   return (
     <aside className="bg-black text-white w-64 h-screen flex flex-col justify-between p-4 shadow-xl">
@@ -36,30 +51,22 @@ export default function Sidebar() {
         </nav>
 
         {/* Projects */}
-        <SectionToggle
-          title="Projects"
-          open={showProjects}
-          onToggle={() => setShowProjects(!showProjects)}
-        />
+        <SectionToggle title="Projects" open={showProjects} onToggle={() => setShowProjects(!showProjects)} />
         {showProjects && (
           <div className="pl-4 space-y-2 mt-2">
             {projects.map((project) => (
               <SidebarItem
-                key={project}
+                key={project.id}
                 icon={<FaBoxOpen />}
-                label={project}
-                href={`/projects/${project.toLowerCase()}`}
+                label={project.name}
+                href={`/Board/${project.id}`}
               />
             ))}
           </div>
         )}
 
         {/* Priority */}
-        <SectionToggle
-          title="Priority"
-          open={showPriorities}
-          onToggle={() => setShowPriorities(!showPriorities)}
-        />
+        <SectionToggle title="Priority" open={showPriorities} onToggle={() => setShowPriorities(!showPriorities)} />
         {showPriorities && (
           <div className="pl-4 space-y-2 mt-2">
             {priorities.map((p) => (

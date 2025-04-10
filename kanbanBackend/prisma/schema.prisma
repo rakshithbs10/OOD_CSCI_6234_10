@@ -26,8 +26,9 @@ model User {
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
 
-  boards        Board[] @relation("BoardMembers")
-}
+  boards       Board[] @relation("BoardMembers")
+  ownedBoards  Board[] @relation("BoardOwner") // ✅ Matches Board.owner
+}  
 
 model Team {
   id        Int      @id @default(autoincrement())
@@ -41,48 +42,47 @@ model Board {
   id        Int      @id @default(autoincrement())
   name      String
   summary   String?
-  users     User[]   @relation("BoardMembers") // ✅ FIXED
-  columns   Column[] // ✅ NEW
-  tasks     Task[]   // ✅ NEW back relation
+
+  owner     User     @relation("BoardOwner", fields: [ownerId], references: [id])
+  ownerId   Int
+
+  users     User[]   @relation("BoardMembers")
+  columns   Column[]
+  tasks     Task[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Task {
-  id                  Int      @id @default(autoincrement())
-  title               String
-  description         String
-  acceptanceCriteria  String
-  storyPoints         Int
-  difficulty          Int
-  verified            Boolean  @default(false)
-  completed           Boolean  @default(false)
-  attachment          String?
+  id                 Int     @id @default(autoincrement())
+  title              String
+  description        String
+  acceptanceCriteria String
+  storyPoints        Int
+  difficulty         Int
+  verified           Boolean @default(false)
+  completed          Boolean @default(false)
+  attachment         String?
 
-  createdBy           String
-  assignedTo          String
-  verifier            String
+  createdBy  String
+  assignedTo String
+  verifier   String
 
-  board               Board    @relation(fields: [boardId], references: [id])
-  boardId             Int
-  column              Column?  @relation(fields: [columnId], references: [id])
-  columnId            Int?
+  board    Board   @relation(fields: [boardId], references: [id])
+  boardId  Int
+  column   Column? @relation(fields: [columnId], references: [id])
+  columnId Int?
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-
 
 model Column {
   id        Int      @id @default(autoincrement())
   name      String
   board     Board    @relation(fields: [boardId], references: [id])
   boardId   Int
-  tasks     Task[]   // A column has many tasks
+  tasks     Task[] // A column has many tasks
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-
-
-
