@@ -68,4 +68,11 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       res.status(500).json({ error: 'Login failed' })
     }
   })
+
+  // Update notification preferences
+router.put('/:id/notifications', UserController.updateNotificationPreferences)
+
+// Update user password
+router.put('/:id/password', UserController.updateUserPassword)
+
 export default router

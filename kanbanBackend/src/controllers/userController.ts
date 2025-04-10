@@ -1,4 +1,5 @@
 import { PrismaClient } from '../../generated/prisma'
+import {  Request, Response,RequestHandler } from 'express'
 import bcrypt from 'bcrypt'
 
 
@@ -40,3 +41,57 @@ export const verifyPassword = async (email: string, inputPassword: string) => {
   return match ? user : null
 
 }
+
+// PUT /api/users/:id/notifications
+export const updateNotificationPreferences: RequestHandler = async (req, res) => {
+  const userId = parseInt(req.params.id)
+  const { notifyAssignedTasks, notifyTaskComments, notifyDueDates, notifyBoardInvites } = req.body
+
+  try {
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        notifyAssignedTasks,
+        notifyTaskComments,
+        notifyDueDates,
+        notifyBoardInvites
+      }
+    })
+
+    res.json(updated)
+  } catch (error) {
+    console.error('Error updating preferences:', error)
+    res.status(500).json({ error: 'Failed to update preferences' })
+  }
+}
+
+export const updateUserPassword = async (req: Request, res: Response): Promise<void> => {
+  const userId = parseInt(req.params.id)
+  const { currentPassword, newPassword } = req.body
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } })
+    if (!user) {
+      res.status(404).json({ error: 'User not found' })
+      return
+    }
+
+    const valid = await bcrypt.compare(currentPassword, user.password)
+    if (!valid) {
+      res.status(400).json({ error: 'Current password is incorrect' })
+      return
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10)
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashed }
+    })
+
+    res.json({ message: 'Password updated' })
+  } catch (error) {
+    console.error('Error updating password:', error)
+    res.status(500).json({ error: 'Failed to update password' })
+  }
+}
+
