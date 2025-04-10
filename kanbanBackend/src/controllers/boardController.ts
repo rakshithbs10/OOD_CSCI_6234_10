@@ -251,3 +251,29 @@ export const softDeleteBoard: RequestHandler = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' })
   }
 }
+
+export const searchBoards: RequestHandler = async (req, res) => {
+  const query = req.query.q as string || ''
+
+  try {
+    const boards = await prisma.board.findMany({
+      where: {
+        isDeleted: false,
+        name: {
+          startsWith: query,
+          mode: 'insensitive'
+        }
+      },
+      include: {
+        owner: true,
+        users: true,
+        columns: true
+      }
+    })
+
+    res.json(boards)
+  } catch (err) {
+    console.error('❌ Failed to search boards:', err)
+    res.status(500).json({ error: 'Failed to search boards' })
+  }
+}
