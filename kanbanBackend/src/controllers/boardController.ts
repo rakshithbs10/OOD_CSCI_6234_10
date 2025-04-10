@@ -170,3 +170,34 @@ export const getBoardById = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ error: 'Failed to fetch board' })
   }
 }
+
+export const getUsersByBoardId = async (req: Request, res: Response): Promise<void> => {
+  const boardId = parseInt(req.params.boardId)
+  const query = (req.query.q as string)?.toLowerCase() || ''
+
+  if (isNaN(boardId)) {
+    res.status(400).json({ error: 'Invalid board ID' })
+    return
+  }
+
+  try {
+    const board = await prisma.board.findUnique({
+      where: { id: boardId },
+      include: { users: true }
+    })
+
+    if (!board) {
+      res.status(404).json({ error: 'Board not found' })
+      return
+    }
+
+    const filteredUsers = board.users
+      .filter(user => !user.isDeleted && user.username.toLowerCase().startsWith(query))
+      .map(({ id, username, email }) => ({ id, username, email }))
+
+    res.json(filteredUsers)
+  } catch (error) {
+    console.error('❌ Error fetching users for board:', error)
+    res.status(500).json({ error: 'Failed to fetch users' })
+  }
+}

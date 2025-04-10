@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { DragDropContext, DropResult } from '@hello-pangea/dnd'
-import { useRouter } from 'next/navigation'
+import { v4 as uuidv4 } from 'uuid'
 import Column from './Column'
 import Sidebar from '@/components/Sidebar/Sidebar'
 import Header from '@/components/Header/Header'
 import AddColumnModal from '@/components/Modals/AddColumnModal'
-import AddTaskModal from '@/components/Modals/AddTaskModal'
 
 interface Task {
   id: string
@@ -39,9 +38,7 @@ interface BoardData {
 export default function BoardPage({ boardId }: { boardId?: string }) {
   const [data, setData] = useState<BoardData | null>(null)
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false)
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
-  const router = useRouter()
 
   const fetchBoard = async () => {
     if (!boardId) return
@@ -57,7 +54,7 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
         columns[col.id] = {
           id: col.id.toString(),
           title: col.name,
-          taskIds: [] // Future task mapping
+          taskIds: [] // Future task integration
         }
         columnOrder.push(col.id.toString())
       }
@@ -81,8 +78,9 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
   }, [boardId])
 
   const onDragEnd = (result: DropResult) => {
+    if (!data) return
     const { source, destination, draggableId } = result
-    if (!destination || !data) return
+    if (!destination) return
 
     const start = data.columns[source.droppableId]
     const end = data.columns[destination.droppableId]
@@ -91,7 +89,6 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
       const newTaskIds = [...start.taskIds]
       newTaskIds.splice(source.index, 1)
       newTaskIds.splice(destination.index, 0, draggableId)
-
       const newColumn = { ...start, taskIds: newTaskIds }
 
       setData({
@@ -104,7 +101,6 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
     } else {
       const startTaskIds = [...start.taskIds]
       const endTaskIds = [...end.taskIds]
-
       startTaskIds.splice(source.index, 1)
       endTaskIds.splice(destination.index, 0, draggableId)
 
@@ -120,22 +116,17 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
   }
 
   const handleAddColumn = async (title: string) => {
-    if (!boardId) return
-
     try {
       const res = await fetch('http://localhost:5001/api/boards/column/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ boardId: parseInt(boardId), name: title })
+        body: JSON.stringify({ boardId: parseInt(boardId!), name: title })
       })
 
-      if (res.ok) {
-        await fetchBoard() // Refresh to load new column
-      } else {
-        console.error('Failed to create column')
-      }
+      if (!res.ok) throw new Error('Failed to create column')
+      await fetchBoard()
     } catch (err) {
-      console.error('Error creating column:', err)
+      console.error(err)
     } finally {
       setIsColumnModalOpen(false)
     }
@@ -149,7 +140,6 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
 
       <div className="flex">
         <Sidebar />
-
         <main className="p-6 flex-1">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Project Board</h1>
 
@@ -162,7 +152,14 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
                   data.columnOrder.map((columnId) => {
                     const column = data.columns[columnId]
                     const tasks = column.taskIds.map((taskId) => data.tasks[taskId])
-                    return <Column key={column.id} column={column} tasks={tasks} />
+                    return (
+                      <Column
+                        key={column.id}
+                        column={column}
+                        tasks={tasks}
+                        boardId={boardId!}
+                      />
+                    )
                   })
                 ) : (
                   <p className="text-gray-600">No columns yet.</p>
@@ -184,11 +181,6 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
         isOpen={isColumnModalOpen}
         onClose={() => setIsColumnModalOpen(false)}
         onAdd={handleAddColumn}
-      />
-      <AddTaskModal
-        isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
-        onAdd={(taskData) => console.log(taskData)}
       />
     </div>
   )

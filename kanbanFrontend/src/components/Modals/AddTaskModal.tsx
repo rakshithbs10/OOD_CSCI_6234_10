@@ -1,17 +1,21 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 export default function AddTaskModal({
   isOpen,
   onClose,
   onAdd,
-  initialData = null
+  initialData = null,
+  boardId,
+  columnId
 }: {
   isOpen: boolean
   onClose: () => void
   onAdd: (task: any) => void
   initialData?: any | null
+  boardId: number
+  columnId: number
 }) {
   const [form, setForm] = useState({
     name: '',
@@ -28,29 +32,36 @@ export default function AddTaskModal({
   })
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [suggestions, setSuggestions] = useState<any[]>([])
+  const [activeField, setActiveField] = useState<string | null>(null)
+
+  const wrapperRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+        setActiveField(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   useEffect(() => {
     if (isOpen) {
-      if (initialData) {
-        setForm({
-          ...form,
-          ...initialData
-        })
-      } else {
-        setForm({
-          name: '',
-          description: '',
-          createdBy: '',
-          assignedTo: '',
-          verifier: '',
-          criteria: '',
-          storyPoints: '',
-          difficulty: '',
-          attachments: null,
-          verified: false,
-          completed: false
-        })
-      }
+      setForm(initialData ? { ...form, ...initialData } : {
+        name: '',
+        description: '',
+        createdBy: '',
+        assignedTo: '',
+        verifier: '',
+        criteria: '',
+        storyPoints: '',
+        difficulty: '',
+        attachments: null,
+        verified: false,
+        completed: false
+      })
       setErrors({})
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,34 +70,82 @@ export default function AddTaskModal({
   const handleChange = (field: string, value: string | File | boolean | null) => {
     setForm((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => ({ ...prev, [field]: '' }))
+    if (['createdBy', 'assignedTo', 'verifier'].includes(field)) {
+      fetchSuggestions(field, String(value))
+    }
   }
 
-  const handleSubmit = () => {
+  const fetchSuggestions = async (field: string, query: string) => {
+    try {
+      const url = query.trim()
+        ? `http://localhost:5001/api/boards/boards/${boardId}/users?q=${query}`
+        : `http://localhost:5001/api/boards/boards/${boardId}/users`
+      const res = await fetch(url)
+      const data = await res.json()
+      setSuggestions(data)
+      setActiveField(field)
+    } catch (err) {
+      console.error('Failed to fetch users', err)
+    }
+  }
+
+  const handleSubmit = async () => {
     const requiredFields = ['name', 'storyPoints', 'criteria', 'createdBy', 'difficulty']
     const newErrors: any = {}
-
     requiredFields.forEach((field) => {
       const value = form[field as keyof typeof form]
       if (value == null || (typeof value === 'string' && !value.trim())) {
         newErrors[field] = 'This field is required'
       }
     })
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
     }
 
-    onAdd(form)
-    onClose()
+    try {
+      const payload = {
+        title: form.name,
+        description: form.description,
+        acceptanceCriteria: form.criteria,
+        storyPoints: parseInt(form.storyPoints),
+        difficulty: parseInt(form.difficulty),
+        createdBy: form.createdBy,
+        assignedTo: form.assignedTo,
+        verifier: form.verifier,
+        boardId,
+        columnId,
+        verified: form.verified,
+        completed: form.completed,
+        attachment: form.attachments ? form.attachments.name : null
+      }
+
+      const res = await fetch('http://localhost:5001/api/tasks/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      if (res.ok) {
+        onAdd(payload)
+        onClose()
+        window.location.reload()
+      } else {
+        console.error('Failed to create task')
+      }
+    } catch (err) {
+      console.error('Error creating task:', err)
+    }
   }
 
   if (!isOpen) return null
 
-
   return (
     <div className="fixed inset-0 bg-[rgba(0,0,0,0.35)] flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6 relative overflow-y-auto max-h-[90vh]">
+      <div
+        ref={wrapperRef}
+        className="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6 relative overflow-y-auto max-h-[90vh]"
+      >
         <button onClick={onClose} className="absolute top-3 right-4 text-xl font-bold text-gray-500">&times;</button>
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Create New Task</h2>
 
@@ -114,10 +173,10 @@ export default function AddTaskModal({
           />
         </div>
 
-        {/* Created By, Assigned To, Verifier */}
+        {/* Search fields */}
         <div className="flex gap-4 mb-4">
           {['createdBy', 'assignedTo', 'verifier'].map((field) => (
-            <div key={field} className="flex-1">
+            <div key={field} className="flex-1 relative">
               <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
                 {field.replace(/([A-Z])/g, ' $1')} {field === 'createdBy' ? '*' : ''}
               </label>
@@ -125,10 +184,29 @@ export default function AddTaskModal({
                 type="text"
                 value={form[field as keyof typeof form] as string}
                 onChange={(e) => handleChange(field, e.target.value)}
+                onFocus={() => fetchSuggestions(field, form[field as keyof typeof form] as string)}
                 className={`w-full border rounded px-3 py-2 text-black ${
                   errors[field] ? 'border-red-500' : 'border-gray-300'
                 } focus:outline-none focus:ring`}
+                placeholder="Search..."
               />
+              {activeField === field && suggestions.length > 0 && (
+                <div className="absolute z-10 bg-white border border-gray-300 rounded shadow w-full mt-1 max-h-40 overflow-y-auto">
+                  {suggestions.map((user) => (
+                    <div
+                      key={user.id}
+                      className="px-3 py-2 hover:bg-gray-100 text-black cursor-pointer"
+                      onMouseDown={(e) => {
+                        e.preventDefault()
+                        handleChange(field, user.username)
+                        setActiveField(null)
+                      }}
+                    >
+                      {user.username}
+                    </div>
+                  ))}
+                </div>
+              )}
               {errors[field] && <p className="text-sm text-red-500 mt-1">{errors[field]}</p>}
             </div>
           ))}
@@ -163,7 +241,7 @@ export default function AddTaskModal({
           </div>
 
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Level of Difficulty (0–10) *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Difficulty *</label>
             <input
               type="number"
               min="0"

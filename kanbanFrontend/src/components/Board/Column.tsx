@@ -6,19 +6,32 @@ import Card from './Card'
 import ColumnMenu from './ColumnMenu'
 import AddTaskModal from '@/components/Modals/AddTaskModal'
 
-export default function Column({ column, tasks }: any) {
+export default function Column({ column, tasks, boardId }: { column: any, tasks: any[], boardId: string }) {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
   const [isRenaming, setIsRenaming] = useState(false)
   const [newTitle, setNewTitle] = useState(column.title)
 
-  const handleAddTask = (task: any) => {
-    console.log('Task to be added:', task)
+  const handleAddTask = async (task: any) => {
+    try {
+      const res = await fetch(`http://localhost:5001/api/tasks/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...task,
+          boardId: parseInt(boardId),
+          columnId: parseInt(column.id)
+        })
+      })
+
+      if (!res.ok) throw new Error('Failed to create task')
+      window.location.reload()
+    } catch (err) {
+      console.error(err)
+    }
     setIsTaskModalOpen(false)
   }
 
-  const handleRename = async () => {
-    setIsRenaming(true)
-  }
+  const handleRename = () => setIsRenaming(true)
 
   const handleRenameSubmit = async () => {
     try {
@@ -27,15 +40,12 @@ export default function Column({ column, tasks }: any) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newTitle })
       })
-
       if (res.ok) {
         setIsRenaming(false)
         window.location.reload()
-      } else {
-        console.error('Failed to rename column')
       }
     } catch (err) {
-      console.error('Error renaming column:', err)
+      console.error(err)
     }
   }
 
@@ -44,14 +54,9 @@ export default function Column({ column, tasks }: any) {
       const res = await fetch(`http://localhost:5001/api/column/${column.id}`, {
         method: 'DELETE'
       })
-
-      if (res.ok) {
-        window.location.reload()
-      } else {
-        console.error('Failed to delete column')
-      }
+      if (res.ok) window.location.reload()
     } catch (err) {
-      console.error('Error deleting column:', err)
+      console.error(err)
     }
   }
 
@@ -73,7 +78,6 @@ export default function Column({ column, tasks }: any) {
         ) : (
           <h2 className="text-lg font-semibold text-gray-800">{column.title}</h2>
         )}
-
         <ColumnMenu onRename={handleRename} onDelete={handleDelete} />
       </div>
 
@@ -103,6 +107,8 @@ export default function Column({ column, tasks }: any) {
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         onAdd={handleAddTask}
+        boardId={parseInt(boardId)}
+        columnId={parseInt(column.id)}
       />
     </div>
   )

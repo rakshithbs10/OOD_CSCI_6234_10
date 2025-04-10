@@ -6,6 +6,7 @@ import {
   getBoardColumns,
   getAllBoardsForUser,
   addUserToBoard,
+  getUsersByBoardId,
   getBoardById
 } from '../controllers/boardController'
 
@@ -28,6 +29,9 @@ router.post('/:boardId/add-member', addUserToBoard)
 
 // Get all boards a user is part of
 router.get('/user/:userId/boards', getAllBoardsForUser)
+
+router.get('/boards/:boardId/users', getUsersByBoardId)
+
 
 router.get('/board/:boardId', getBoardById)
 

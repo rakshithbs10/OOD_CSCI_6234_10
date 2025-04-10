@@ -45,7 +45,6 @@ export default function Sidebar() {
       <div>
         <nav className="space-y-2">
           <SidebarItem icon={<FaHome />} label="Home" href="/" />
-          <SidebarItem icon={<FaClock />} label="Timeline" href="/timeline" />
           <SidebarItem icon={<FaSearch />} label="Search" href="/search" />
           <SidebarItem icon={<FaCog />} label="Settings" href="/settings" />
         </nav>
@@ -65,20 +64,7 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* Priority */}
-        <SectionToggle title="Priority" open={showPriorities} onToggle={() => setShowPriorities(!showPriorities)} />
-        {showPriorities && (
-          <div className="pl-4 space-y-2 mt-2">
-            {priorities.map((p) => (
-              <SidebarItem
-                key={p.label}
-                icon={p.icon}
-                label={p.label}
-                href={`/priority/${p.label.toLowerCase()}`}
-              />
-            ))}
-          </div>
-        )}
+
       </div>
 
       {/* Footer Controls */}
