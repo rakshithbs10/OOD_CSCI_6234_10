@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { DragDropContext, DropResult } from '@hello-pangea/dnd'
-import { v4 as uuidv4 } from 'uuid'
 import Column from './Column'
 import Sidebar from '@/components/Sidebar/Sidebar'
 import Header from '@/components/Header/Header'
@@ -10,12 +9,12 @@ import AddColumnModal from '@/components/Modals/AddColumnModal'
 
 interface Task {
   id: string
-  name: string
+  title: string
   description: string
   createdBy: string
   assignedTo: string
   verifier: string
-  criteria: string
+  acceptanceCriteria: string
   storyPoints: string
   difficulty: string
   attachments: File | null
@@ -47,25 +46,41 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
       const res = await fetch(`http://localhost:5001/api/boards/board/${boardId}`)
       const board = await res.json()
 
+      const tasks: Record<string, Task> = {}
       const columns: Record<string, ColumnType> = {}
       const columnOrder: string[] = []
 
       for (const col of board.columns || []) {
-        columns[col.id] = {
-          id: col.id.toString(),
-          title: col.name,
-          taskIds: [] // Future task integration
+        const taskIds: string[] = []
+
+        for (const task of col.tasks || []) {
+          tasks[task.id] = {
+            id: String(task.id),
+            title: task.title,
+            description: task.description,
+            createdBy: task.createdBy,
+            assignedTo: task.assignedTo,
+            verifier: task.verifier,
+            acceptanceCriteria: task.acceptanceCriteria,
+            storyPoints: String(task.storyPoints),
+            difficulty: String(task.difficulty),
+            attachments: task.attachment || null,
+            verified: task.verified,
+            completed: task.completed
+          }
+          taskIds.push(String(task.id))
         }
-        columnOrder.push(col.id.toString())
+
+        columns[col.id] = {
+          id: String(col.id),
+          title: col.name,
+          taskIds
+        }
+
+        columnOrder.push(String(col.id))
       }
 
-      const transformed: BoardData = {
-        tasks: {},
-        columns,
-        columnOrder
-      }
-
-      setData(transformed)
+      setData({ tasks, columns, columnOrder })
     } catch (err) {
       console.error('Failed to load board:', err)
     } finally {
@@ -142,7 +157,6 @@ export default function BoardPage({ boardId }: { boardId?: string }) {
         <Sidebar />
         <main className="p-6 flex-1">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Project Board</h1>
-
           {loading ? (
             <p className="text-gray-600">Loading board...</p>
           ) : (

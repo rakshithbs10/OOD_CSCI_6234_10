@@ -89,7 +89,7 @@ export default function Column({ column, tasks, boardId }: { column: any, tasks:
             className="flex flex-col gap-3 min-h-[60px]"
           >
             {tasks.map((task: any, index: number) => (
-              <Card key={task.id} task={task} index={index} />
+              <Card key={task.id} task={task} index={index} boardId={boardId} columnId={column.id} />
             ))}
             {provided.placeholder}
           </div>
