@@ -75,14 +75,28 @@ export default function CreateBoardModal({
   
       if (res.ok) {
         const data = await res.json()
-        console.log('Board created:', data)
+        const boardId = data.board?.id || data.id // adjust depending on your backend structure
+  
+        // ✅ Create default columns
+        const defaultColumns = ['To Do', 'Completed', 'In Progress']
+        await Promise.all(
+          defaultColumns.map((name) =>
+            fetch('http://localhost:5001/api/boards/column/create', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ boardId, name })
+            })
+          )
+        )
+  
+        // 🧹 Cleanup and close modal
         onClose()
         setBoardName('')
         setSummary('')
         setSearch('')
         setUsers([])
         setSelectedUsers([])
-        window.location.reload() // ✅ Refresh the page after modal closes
+        window.location.reload()
       } else {
         console.error('Failed to create board')
       }
@@ -90,6 +104,7 @@ export default function CreateBoardModal({
       console.error('Error creating board:', err)
     }
   }
+  
   
 
   useEffect(() => {
