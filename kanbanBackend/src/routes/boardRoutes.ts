@@ -5,7 +5,8 @@ import {
   createColumn,
   getBoardColumns,
   getAllBoardsForUser,
-  addUserToBoard
+  addUserToBoard,
+  getBoardById
 } from '../controllers/boardController'
 
 const router = express.Router()
@@ -27,5 +28,9 @@ router.post('/:boardId/add-member', addUserToBoard)
 
 // Get all boards a user is part of
 router.get('/user/:userId/boards', getAllBoardsForUser)
+
+router.get('/board/:boardId', getBoardById)
+
+
 
 export default router

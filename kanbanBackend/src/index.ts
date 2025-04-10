@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes'
 import teamRoutes from './routes/teamRoutes'
 import boardRoutes from './routes/boardRoutes';
 import taskRoutes from './routes/taskRoutes';
+import columnRoutes from './routes/columnRoutes';
 
 dotenv.config()
 
@@ -23,6 +24,7 @@ app.use('/api/users', userRoutes)
 app.use('/api/teams', teamRoutes)
 app.use('/api/boards', boardRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/column', columnRoutes);
 
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`)

@@ -8,7 +8,7 @@ export default function ProjectBoardPage() {
 
   return (
     <div className="min-h-screen">
-      <BoardPage />
+      <BoardPage boardId={projectId?.toString()} />
     </div>
   )
 }

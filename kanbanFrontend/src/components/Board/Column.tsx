@@ -8,18 +8,73 @@ import AddTaskModal from '@/components/Modals/AddTaskModal'
 
 export default function Column({ column, tasks }: any) {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
+  const [isRenaming, setIsRenaming] = useState(false)
+  const [newTitle, setNewTitle] = useState(column.title)
 
   const handleAddTask = (task: any) => {
     console.log('Task to be added:', task)
     setIsTaskModalOpen(false)
-    // Optional: You can emit this back to BoardPage with a callback prop if needed
+  }
+
+  const handleRename = async () => {
+    setIsRenaming(true)
+  }
+
+  const handleRenameSubmit = async () => {
+    try {
+      const res = await fetch(`http://localhost:5001/api/column/${column.id}/rename`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newTitle })
+      })
+
+      if (res.ok) {
+        setIsRenaming(false)
+        window.location.reload()
+      } else {
+        console.error('Failed to rename column')
+      }
+    } catch (err) {
+      console.error('Error renaming column:', err)
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      const res = await fetch(`http://localhost:5001/api/column/${column.id}`, {
+        method: 'DELETE'
+      })
+
+      if (res.ok) {
+        window.location.reload()
+      } else {
+        console.error('Failed to delete column')
+      }
+    } catch (err) {
+      console.error('Error deleting column:', err)
+    }
   }
 
   return (
     <div className="bg-white rounded-xl shadow-md w-64 p-4 flex-shrink-0">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-gray-800">{column.title}</h2>
-        <ColumnMenu />
+        {isRenaming ? (
+          <input
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            onBlur={handleRenameSubmit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleRenameSubmit()
+              if (e.key === 'Escape') setIsRenaming(false)
+            }}
+            className="text-lg font-semibold text-gray-800 border-b border-gray-400 focus:outline-none"
+            autoFocus
+          />
+        ) : (
+          <h2 className="text-lg font-semibold text-gray-800">{column.title}</h2>
+        )}
+
+        <ColumnMenu onRename={handleRename} onDelete={handleDelete} />
       </div>
 
       <Droppable droppableId={column.id}>
@@ -37,7 +92,6 @@ export default function Column({ column, tasks }: any) {
         )}
       </Droppable>
 
-      {/* Add Task Button */}
       <button
         className="text-blue-600 text-sm mt-4 hover:underline"
         onClick={() => setIsTaskModalOpen(true)}
@@ -45,7 +99,6 @@ export default function Column({ column, tasks }: any) {
         + Add task
       </button>
 
-      {/* Modal */}
       <AddTaskModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
