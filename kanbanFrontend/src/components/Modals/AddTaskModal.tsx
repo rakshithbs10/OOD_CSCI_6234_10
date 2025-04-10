@@ -37,7 +37,6 @@ export default function AddTaskModal({
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [suggestions, setSuggestions] = useState<any[]>([])
   const [activeField, setActiveField] = useState<string | null>(null)
-
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -104,7 +103,7 @@ export default function AddTaskModal({
       setErrors(newErrors)
       return
     }
-
+  
     try {
       const payload = {
         title: form.name,
@@ -121,30 +120,32 @@ export default function AddTaskModal({
         completed: form.completed,
         attachment: form.attachments ? form.attachments.name : null
       }
-
+  
       const endpoint = isEdit
         ? `http://localhost:5001/api/tasks/${taskId}/update`
         : 'http://localhost:5001/api/tasks/create'
-
-      const method = taskId ? 'PUT' : 'POST'
-
+  
+      const method = isEdit ? 'PUT' : 'POST'
+  
       const res = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       })
-
+  
       if (res.ok) {
-        onAdd(payload)
         onClose()
-        window.location.reload()
+        if (!isEdit) {
+          window.location.reload()
+        }
       } else {
-        console.error(`${taskId ? 'Update' : 'Create'} task failed`)
+        console.error(`${isEdit ? 'Update' : 'Create'} task failed`)
       }
     } catch (err) {
       console.error('Error creating/updating task:', err)
     }
   }
+  
 
   if (!isOpen) return null
 
@@ -157,162 +158,163 @@ export default function AddTaskModal({
         <button onClick={onClose} className="absolute top-3 right-4 text-xl font-bold text-gray-500">&times;</button>
         <h2 className="text-xl font-semibold text-gray-800 mb-4">{form.name || 'Create New Task'}</h2>
 
+        {/* ... (rest of your form stays unchanged) ... */}
         {/* Task Name */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Task Name *</label>
-          <input
-            type="text"
-            value={form.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            className={`w-full border rounded px-3 py-2 text-black ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring`}
-          />
-          {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
-        </div>
+<div className="mb-4">
+<label className="block text-sm font-medium text-gray-700 mb-1">Task Name *</label>
+<input
+type="text"
+value={form.name}
+onChange={(e) => handleChange('name', e.target.value)}
+className={`w-full border rounded px-3 py-2 text-black ${
+errors.name ? 'border-red-500' : 'border-gray-300'
+} focus:outline-none focus:ring`}
+/>
+{errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
+</div>
 
-        {/* Description */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea
-            value={form.description}
-            onChange={(e) => handleChange('description', e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 resize-y text-black focus:outline-none focus:ring"
-          />
-        </div>
+{/* Description */}
+<div className="mb-4">
+<label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+<textarea
+value={form.description}
+onChange={(e) => handleChange('description', e.target.value)}
+className="w-full border border-gray-300 rounded px-3 py-2 resize-y text-black focus:outline-none focus:ring"
+/>
+</div>
 
-        {/* Search fields */}
-        <div className="flex gap-4 mb-4">
-          {['createdBy', 'assignedTo', 'verifier'].map((field) => (
-            <div key={field} className="flex-1 relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
-                {field.replace(/([A-Z])/g, ' $1')} {field === 'createdBy' ? '*' : ''}
-              </label>
-              <input
-                type="text"
-                value={form[field as keyof typeof form] as string}
-                onChange={(e) => handleChange(field, e.target.value)}
-                onFocus={() => fetchSuggestions(field, form[field as keyof typeof form] as string)}
-                className={`w-full border rounded px-3 py-2 text-black ${
-                  errors[field] ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring`}
-                placeholder="Search..."
-              />
-              {activeField === field && suggestions.length > 0 && (
-                <div className="absolute z-10 bg-white border border-gray-300 rounded shadow w-full mt-1 max-h-40 overflow-y-auto">
-                  {suggestions.map((user) => (
-                    <div
-                      key={user.id}
-                      className="px-3 py-2 hover:bg-gray-100 text-black cursor-pointer"
-                      onMouseDown={(e) => {
-                        e.preventDefault()
-                        handleChange(field, user.username)
-                        setActiveField(null)
-                      }}
-                    >
-                      {user.username}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {errors[field] && <p className="text-sm text-red-500 mt-1">{errors[field]}</p>}
-            </div>
-          ))}
-        </div>
+{/* Search fields */}
+<div className="flex gap-4 mb-4">
+{['createdBy', 'assignedTo', 'verifier'].map((field) => (
+<div key={field} className="flex-1 relative">
+<label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+{field.replace(/([A-Z])/g, ' $1')} {field === 'createdBy' ? '*' : ''}
+</label>
+<input
+type="text"
+value={form[field as keyof typeof form] as string}
+onChange={(e) => handleChange(field, e.target.value)}
+onFocus={() => fetchSuggestions(field, form[field as keyof typeof form] as string)}
+className={`w-full border rounded px-3 py-2 text-black ${
+errors[field] ? 'border-red-500' : 'border-gray-300'
+} focus:outline-none focus:ring`}
+placeholder="Search..."
+/>
+{activeField === field && suggestions.length > 0 && (
+<div className="absolute z-10 bg-white border border-gray-300 rounded shadow w-full mt-1 max-h-40 overflow-y-auto">
+{suggestions.map((user) => (
+<div
+key={user.id}
+className="px-3 py-2 hover:bg-gray-100 text-black cursor-pointer"
+onMouseDown={(e) => {
+e.preventDefault()
+handleChange(field, user.username)
+setActiveField(null)
+}}
+>
+{user.username}
+</div>
+))}
+</div>
+)}
+{errors[field] && <p className="text-sm text-red-500 mt-1">{errors[field]}</p>}
+</div>
+))}
+</div>
 
-        {/* Acceptance Criteria */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Acceptance Criteria *</label>
-          <textarea
-            value={form.criteria}
-            onChange={(e) => handleChange('criteria', e.target.value)}
-            className={`w-full border rounded px-3 py-2 resize-y text-black ${
-              errors.criteria ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring`}
-          />
-          {errors.criteria && <p className="text-sm text-red-500 mt-1">{errors.criteria}</p>}
-        </div>
+{/* Acceptance Criteria */}
+<div className="mb-4">
+<label className="block text-sm font-medium text-gray-700 mb-1">Acceptance Criteria *</label>
+<textarea
+value={form.criteria}
+onChange={(e) => handleChange('criteria', e.target.value)}
+className={`w-full border rounded px-3 py-2 resize-y text-black ${
+errors.criteria ? 'border-red-500' : 'border-gray-300'
+} focus:outline-none focus:ring`}
+/>
+{errors.criteria && <p className="text-sm text-red-500 mt-1">{errors.criteria}</p>}
+</div>
 
-        {/* Story Points, Difficulty, Attachments */}
-        <div className="flex gap-4 mb-4 items-start">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Story Points *</label>
-            <input
-              type="number"
-              value={form.storyPoints}
-              onChange={(e) => handleChange('storyPoints', e.target.value)}
-              className={`w-full border rounded px-3 py-2 text-black ${
-                errors.storyPoints ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring`}
-            />
-            {errors.storyPoints && <p className="text-sm text-red-500 mt-1">{errors.storyPoints}</p>}
-          </div>
+{/* Story Points, Difficulty, Attachments */}
+<div className="flex gap-4 mb-4 items-start">
+<div className="flex-1">
+<label className="block text-sm font-medium text-gray-700 mb-1">Story Points *</label>
+<input
+type="number"
+value={form.storyPoints}
+onChange={(e) => handleChange('storyPoints', e.target.value)}
+className={`w-full border rounded px-3 py-2 text-black ${
+errors.storyPoints ? 'border-red-500' : 'border-gray-300'
+} focus:outline-none focus:ring`}
+/>
+{errors.storyPoints && <p className="text-sm text-red-500 mt-1">{errors.storyPoints}</p>}
+</div>
 
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Difficulty *</label>
-            <input
-              type="number"
-              min="0"
-              max="10"
-              value={form.difficulty}
-              onChange={(e) => handleChange('difficulty', e.target.value)}
-              className={`w-full border rounded px-3 py-2 text-black ${
-                errors.difficulty ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring`}
-            />
-            {errors.difficulty && <p className="text-sm text-red-500 mt-1">{errors.difficulty}</p>}
-          </div>
+<div className="flex-1">
+<label className="block text-sm font-medium text-gray-700 mb-1">Difficulty *</label>
+<input
+type="number"
+min="0"
+max="10"
+value={form.difficulty}
+onChange={(e) => handleChange('difficulty', e.target.value)}
+className={`w-full border rounded px-3 py-2 text-black ${
+errors.difficulty ? 'border-red-500' : 'border-gray-300'
+} focus:outline-none focus:ring`}
+/>
+{errors.difficulty && <p className="text-sm text-red-500 mt-1">{errors.difficulty}</p>}
+</div>
 
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Attachments</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="file"
-                onChange={(e) => handleChange('attachments', e.target.files?.[0] || null)}
-                className="block w-full text-sm text-black border border-gray-300 rounded px-2 py-1 file:bg-blue-600 file:text-white file:rounded file:px-3 file:py-1"
-              />
-              {form.attachments && (
-                <button
-                  onClick={() => handleChange('attachments', null)}
-                  className="text-red-500 font-bold"
-                  title="Remove"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+<div className="flex-1">
+<label className="block text-sm font-medium text-gray-700 mb-1">Attachments</label>
+<div className="flex items-center gap-2">
+<input
+type="file"
+onChange={(e) => handleChange('attachments', e.target.files?.[0] || null)}
+className="block w-full text-sm text-black border border-gray-300 rounded px-2 py-1 file:bg-blue-600 file:text-white file:rounded file:px-3 file:py-1"
+/>
+{form.attachments && (
+<button
+onClick={() => handleChange('attachments', null)}
+className="text-red-500 font-bold"
+title="Remove"
+>
+×
+</button>
+)}
+</div>
+</div>
+</div>
 
-        {/* Verified & Completed */}
-        <div className="flex gap-6 mb-6">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={form.verified}
-              onChange={(e) => handleChange('verified', e.target.checked)}
-              className="accent-blue-600 w-4 h-4"
-            />
-            <span className="text-sm text-gray-700">Verified</span>
-          </label>
+{/* Verified & Completed */}
+<div className="flex gap-6 mb-6">
+<label className="flex items-center gap-2">
+<input
+type="checkbox"
+checked={form.verified}
+onChange={(e) => handleChange('verified', e.target.checked)}
+className="accent-blue-600 w-4 h-4"
+/>
+<span className="text-sm text-gray-700">Verified</span>
+</label>
 
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={form.completed}
-              onChange={(e) => handleChange('completed', e.target.checked)}
-              className="accent-green-600 w-4 h-4"
-            />
-            <span className="text-sm text-gray-700">Completed</span>
-          </label>
-        </div>
+<label className="flex items-center gap-2">
+<input
+type="checkbox"
+checked={form.completed}
+onChange={(e) => handleChange('completed', e.target.checked)}
+className="accent-green-600 w-4 h-4"
+/>
+<span className="text-sm text-gray-700">Completed</span>
+</label>
+</div>
 
 
         <button
           onClick={handleSubmit}
           className="mt-2 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
         >
-          {taskId ? 'Update Task' : 'Add Task'}
+          {isEdit ? 'Update Task' : 'Add Task'}
         </button>
       </div>
     </div>

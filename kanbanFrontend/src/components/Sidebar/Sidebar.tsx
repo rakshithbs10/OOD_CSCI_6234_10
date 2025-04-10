@@ -53,14 +53,19 @@ export default function Sidebar() {
         <SectionToggle title="Projects" open={showProjects} onToggle={() => setShowProjects(!showProjects)} />
         {showProjects && (
           <div className="pl-4 space-y-2 mt-2">
-            {projects.map((project) => (
-              <SidebarItem
-                key={project.id}
-                icon={<FaBoxOpen />}
-                label={project.name}
-                href={`/Board/${project.id}`}
-              />
-            ))}
+            {Array.isArray(projects) && projects.length > 0 ? (
+  projects.map((project) => (
+    <SidebarItem
+      key={project.id}
+      icon={<FaBoxOpen />}
+      label={project.name}
+      href={`/Board/${project.id}`}
+    />
+  ))
+) : (
+  <p className="text-gray-400 text-sm pl-3">No projects to display</p>
+)}
+
           </div>
         )}
 
